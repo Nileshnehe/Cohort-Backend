@@ -28,7 +28,7 @@ app.get("/notes", (req,res) => {
 DELETE/notes/idx
 */ 
 app.delete("/notes/:index", (req,res) => {
-    delete notes [ req.params.index ]
+    delete notes [ req.params.index ] 
 
     res.send("note deleted sucssesfully")
 })
