@@ -16,3 +16,18 @@ html{
   background: rgb(40, 37, 37);
   color: white;
 }
+
+.notes {
+  display: flex;
+  gap: 2rem;
+   padding-block: 1rem;  /* top and bottom */
+  padding-inline: 3rem;
+}
+
+.note {
+  background-color: rgb(25, 24, 24);
+  padding: 1rem;
+  max-width: 20rem;
+  
+  border-radius: 1rem;
+}
