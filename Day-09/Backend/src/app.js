@@ -1,10 +1,12 @@
 const express = require("express");
 const noteModel = require("./models/note.model");
 const cors = require("cors")
+const path = require("path")
 
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use(express.static("./public"))
 
 // POST /api/notes
 // create new note and save data mongodb
@@ -63,5 +65,8 @@ app.patch('/api/notes/:id', async (req, res) => {
     })
 })
 
+app.use('*name', (req, res) => {
+    res.sendFile(path.join(__dirname, "..", "/public/index.html"))
+})
 
 module.exports = app
