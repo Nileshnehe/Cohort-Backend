@@ -12,7 +12,7 @@ body,
   width: 100%;
 }
 
-html{
+html {
   background: rgb(40, 37, 37);
   color: white;
 }
@@ -20,14 +20,38 @@ html{
 .notes {
   display: flex;
   gap: 2rem;
-   padding-block: 1rem;  /* top and bottom */
+  padding-block: 1rem;
+  /* top and bottom */
   padding-inline: 3rem;
+  flex-wrap: wrap;
 }
 
 .note {
   background-color: rgb(25, 24, 24);
   padding: 1rem;
   max-width: 20rem;
-  
   border-radius: 1rem;
 }
+
+.note-create-form {
+  display: flex;
+  gap: 1rem;
+  padding-block: 1rem;
+  padding-inline: 3rem;
+}
+
+button{
+  background-color: rgb(255, 0, 0);
+  border: none;
+  /* padding: 0.5rem; */
+  color: white;
+  border-radius: 0.25rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+input{
+  outline: none;
+  border-radius: 0.25rem;
+}
+
