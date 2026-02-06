@@ -6,7 +6,9 @@ const path = require("path")
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(express.static("./public"))
+// ya line ne kay hote [ app.use(express.static("./public")) ]  ya path 
+// cha access bhetato user la ⤵️ [ http://localhost:3000/vite.svg ] ⬅️ ya pth cha access
+app.use(express.static("./public")) 
 
 // POST /api/notes
 // create new note and save data mongodb
@@ -65,8 +67,5 @@ app.patch('/api/notes/:id', async (req, res) => {
     })
 })
 
-app.use('*name', (req, res) => {
-    res.sendFile(path.join(__dirname, "..", "/public/index.html"))
-})
 
 module.exports = app
