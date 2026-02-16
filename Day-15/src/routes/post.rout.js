@@ -11,6 +11,7 @@ postRouter.post("/",upload.single("image"), postController.createPostController)
 
 postRouter.get("/", postController.getPostController)
 
-
+// GET /api/posts/details/:postId
+postRouter.get("/details/:postId", postController.getDetailsController)
 
 module.exports = postRouter
