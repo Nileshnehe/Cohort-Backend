@@ -31,7 +31,7 @@ async function followUserController(req, res) {
     })
 
     if (isAlreadyFollowing) {
-        return res.status(200).json({
+         res.status(200).json({
             message: `You are already following ${followeeUsername}`,
             follow: isAlreadyFollowing
         })
@@ -48,7 +48,71 @@ async function followUserController(req, res) {
     })
 }
 
-async function unfollowUserController(req,res) {
+// Accept Follow Request Function
+
+async function acceptFollowRequest(req, res) {
+    const requestId = req.params.requestId;
+    const currentUser = req.user.username;
+
+    const request = await followModel.findOneAndUpdate(
+        {
+            _id: requestId,
+            followee: currentUser,
+            status: "pending"
+        },
+        {
+            status: "accepted"
+        },
+        { new: true }
+    );
+
+    if (!request){
+        return res.status(404).json({
+            message: "Follow request not found or already processed"
+        });
+    }
+
+    res.status(200).json({
+        message: "Follow Request accepted",
+        request
+    });
+}
+
+
+// Reject Follow Request
+async function rejectFollowRequest(req, res) {
+    const requestId = req.params.requestId;
+    const currentUser = req.user.username;
+
+    const request = await followModel.findOneAndUpdate(
+        {
+            _id: requestId,
+            followee: currentUser,
+            status: "pending"
+        },
+        {
+            status: "rejected"
+        },
+        { new: true }
+    );
+
+    if (!request){
+        return res.status(404).json({
+            message: "Follow request not found or already processed"
+        });
+    }
+
+    res.status(200).json({
+        message: "Follow request Rejected",
+        request
+    });
+}
+
+
+
+
+
+async function unfollowUserController(req, res) {
     const followerUsername = req.user.username
     const followeeUsername = req.params.username
 
@@ -57,7 +121,7 @@ async function unfollowUserController(req,res) {
         followee: followeeUsername
     })
 
-    if (!isUserFollowing){
+    if (!isUserFollowing) {
         res.status(200).json({
             message: `You are not following ${followerUsername}`
         })
@@ -74,5 +138,7 @@ async function unfollowUserController(req,res) {
 
 module.exports = {
     followUserController,
-    unfollowUserController
+    unfollowUserController,
+    acceptFollowRequest,
+    rejectFollowRequest
 }

@@ -14,4 +14,11 @@ userRouter.post("/follow/:username", identifyUser, userController.followUserCont
 // @access Private
 userRouter.post("/unfollow/:username", identifyUser, userController.unfollowUserController);
 
+// @routw patch /api/users/follow/accept/:requestId
+// @description accept request
+userRouter.patch("/follow/accept/:requestId", identifyUser, userController.acceptFollowRequest)
+
+// @route patch /api/users/follow/reject/:requestId
+// @description reject request
+userRouter.patch("/follow/reject/:requestId", identifyUser, userController.rejectFollowRequest)
 module.exports = userRouter;
