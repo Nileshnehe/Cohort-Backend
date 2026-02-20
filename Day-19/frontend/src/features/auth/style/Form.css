@@ -1,0 +1,46 @@
+/*# sourceMappingURL=Form.css.map */
+
+main {
+    height: 100vh;
+    width: center;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;    
+}
+
+.form-container {
+    height: fit-content;
+    min-width: 400px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+     
+    input,button {
+        border: none;
+        outline: none;
+        padding-inline: 1.5rem;
+        padding-block: 1rem;
+        border-radius: 1rem;
+    }
+
+    button {
+        background-color: rgb(189, 27, 27);
+        color: azure;
+        cursor: pointer;
+    }
+   
+    .toggleAuthForm {
+        color: burlywood;
+        text-decoration: none;
+        cursor: pointer;
+    }
+}
