@@ -1,44 +1,31 @@
-import axios from "axios";
+import axios from "axios"
 
 const api = axios.create({
-    baseURL: "http://localhost:3000/api/auth",
-    withCredentials: true
+    baseURL: "http://localhost/:3000/api/auth",
+    withCredential: true,
 })
 
-export async function register(username, email, password) {
-    try {
-        const respones = await api.post("/register", {
-            username,
-            email,
-            password
-        })
+export async function login(username, password) {
+    const respones = await api.post("/login", {
+        username,
+        password
+    })
 
-        return respones.data
-
-    } catch (err) {
-        throw err
-    }
+    return respones.data
 }
 
-export async function signin(username, password) {
-    try {
-        const respones = await api.post("/login", {
-            username,
-            password,
-        })
+export async function regisetr(username, email, password) {
+    const respones = await api.post("/register", {
+        username,
+        email,
+        password
+    })
 
-        return respones.data
-
-    } catch (err) {
-        throw err
-    }
+    return respones.data
 }
 
 export async function getMe() {
-    try {
-        const respones = await api.get("/get-Me")
-        return respones.data
-    } catch (err) {
-        throw err
-    }
+    const respones = await api.get("/get-me")
+
+    return respones.data
 }
