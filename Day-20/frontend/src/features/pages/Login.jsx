@@ -6,7 +6,7 @@ import { Navigate } from 'react-router'
 const Login = () => {
     const { user, loading, handleLogin } = useAuth()
 
-    const [username, setUsernsme] = useState("")
+    const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
 
     const navigate = useNavigate()
@@ -31,7 +31,7 @@ const Login = () => {
                 <form onSubmit={handleSubmit}>
 
                     <input
-                        onInput={(e) => { setUsernsme(e.target.value) }}
+                        onInput={(e) => { setUsername(e.target.value) }}
                         type="username"
                         name='username'
                         id='username'
