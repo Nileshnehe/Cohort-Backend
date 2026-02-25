@@ -1,18 +1,51 @@
 import '../auth/style/form.scss'
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
+import { useAuth } from '../auth/hooks/useAuth'
+import { useState } from 'react'
+import { Navigate } from 'react-router'
 const Login = () => {
+    const { user, loading, handleLogin } = useAuth()
 
-    const handleSubmit = (e) => {
+    const [username, setUsernsme] = useState("")
+    const [password, setPassword] = useState("")
+
+    const navigate = useNavigate()
+
+    const handleSubmit = async (e) => {
         e.preventDefault()
+
+        await handleLogin(username, password)
+
+        navigate("/")
     }
+      if(loading){
+        return (<main>
+            <h1>Login......</h1>  
+        </main>)
+      }
 
     return (
         <main>
             <div className='form-container'>
                 <h1>Login</h1>
                 <form onSubmit={handleSubmit}>
-                    <input type="username" name='username' id='username' placeholder='Enter Username' />
-                    <input type="text" name='password' id='password' placeholder='Enter Password' />
+
+                    <input
+                        onInput={(e) => { setUsernsme(e.target.value) }}
+                        type="username"
+                        name='username'
+                        id='username'
+                        placeholder='Enter Username'
+                    />
+
+                    <input
+                        onInput={(e) => { setPassword(e.target.value) }}
+                        type="password"
+                        name='password'
+                        id='password'
+                        placeholder='Enter Password'
+                    />
+
                     <button className='button primary-button'>Login</button>
 
 
