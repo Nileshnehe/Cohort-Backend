@@ -15,4 +15,5 @@ authRouter.post("/login", authController.loginController)
 // @access private
 authRouter.get("/get-Me", identifyUser, authController.getMeController)
 
+// 
 module.exports = authRouter

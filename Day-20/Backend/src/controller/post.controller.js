@@ -15,7 +15,7 @@ async function createPostController(req, res) {
 
     const token = req.cookies.token
 
-   
+
 
 
 
@@ -66,20 +66,20 @@ async function getPostController(req, res) {
 async function getDetailsController(req, res) {
     const token = req.cookies.token
 
-  
+
 
     const userId = req.user
     const postId = req.params.postId
 
     const post = await postModel.findById(postId)
 
-    
+
 
     return res.status(404)
-    .json({
-        message: "Post feched successfully",
-        post
-    })
+        .json({
+            message: "Post feched successfully",
+            post
+        })
 }
 
 async function likePostController(req, res) {
@@ -104,12 +104,22 @@ async function likePostController(req, res) {
         message: "Post liked successfully.",
         like
     })
-
 }
+
+async function getFeedController(req, res) {
+    const posts = await postModel.find().populate("user")
+
+    res.status(200).json({
+        message: "posts feched suceesfully.",
+        posts
+    })
+}
+
 
 module.exports = {
     createPostController,
     getPostController,
     getDetailsController,
-    likePostController
+    likePostController,
+    getFeedController,
 }
