@@ -1,7 +1,7 @@
 const userModel = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
+const blacklistModel = require("../middlewares/blacklist.middleware")
 
 
 /**
@@ -90,6 +90,10 @@ async function loginUser(req, res) {
     })
 }
 
+/**
+ * getMe
+ * /api/auth/get-Me
+ */
 async function getMe(req, res) {
     const user = await userModel.findById(req.user.id)
 
@@ -97,11 +101,32 @@ async function getMe(req, res) {
         message: "User fetched successfully",
         user
     })
-    
+                 
 }
+
+/**
+ * /api/auth/logout
+ */
+async function logoutUser(req, res) {
+    const token = req.cookies.token
+
+    res.clearCookies("token")
+
+    await blacklistModel.create({
+        token
+    })
+
+    res.status(201).json({
+        message: "Logout SuccessFully"
+    })
+}
+
+
+
 
 module.exports = {
     registerUser,
     loginUser,
-    getMe
+    getMe,
+    logoutUser
 }
