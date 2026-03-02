@@ -1,13 +1,9 @@
 const userModel = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const blacklistModel = require("../middlewares/blacklist.middleware")
+const blacklistModel = require("../models/blacklist.model")
+const redis = require("../config/cache")
 
-
-/**
- * Registers a new user in the database.
- * Creates a user document with hashed password using Mongoose model.
- */
 async function registerUser(req, res) {
     const { username, email, password } = req.body;
 
@@ -17,11 +13,11 @@ async function registerUser(req, res) {
             { username }
         ]
     })
+
     if (isAlreadyRegistered) {
-        return res.status(400)
-            .json({
-                message: "User with the same email and username already exists"
-            })
+        return res.status(400).json({
+            message: "User with the same email or username already exists"
+        })
     }
 
     const hash = await bcrypt.hash(password, 10);
@@ -32,47 +28,61 @@ async function registerUser(req, res) {
         password: hash
     })
 
-    const token = jwt.sign({
-        id: user._id,
-        username: user.username
-    }, process.env.JWT_SECRET,
+    const token = jwt.sign(
+        {
+            id: user._id,
+            username: user.username
+        },
+        process.env.JWT_SECRET,
         {
             expiresIn: "3d"
-        })
+        }
+    )
+
+    res.cookie("token", token)
+
+    return res.status(201).json({
+        message: "User registered successfully",
+        user: {
+            id: user._id,
+            username: user.username,
+            email: user.email
+        }
+    })
+
 }
 
-/**
- * Authenticates a user.
- * Verifies email and password, and returns authentication response.
- */
 async function loginUser(req, res) {
-    const { username, email, password } = req.body;
+    const { email, password, username } = req.body;
 
     const user = await userModel.findOne({
         $or: [
-            { username },
-            { email }
+            { email },
+            { username }
         ]
     }).select("+password")
 
     if (!user) {
-        return res.status(400)
-            .json({
-                message: "Invalid Credentials"
-            })
+        return res.status(400).json({
+            message: "Invalid credentials"
+        })
     }
+
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
         return res.status(400).json({
-            message: "Invalid Credentials"
+            message: "Invalid credentials"
         })
     }
+
     const token = jwt.sign(
         {
-            id: user._id, 
+            id: user._id,
             username: user.username
-        }, process.env.JWT_SECRET,
+        },
+        process.env.JWT_SECRET,
         {
             expiresIn: "3d"
         }
@@ -81,7 +91,7 @@ async function loginUser(req, res) {
     res.cookie("token", token)
 
     return res.status(200).json({
-        message: "User Logged in successfully.",
+        message: "User logged in successfully",
         user: {
             id: user._id,
             username: user.username,
@@ -90,10 +100,6 @@ async function loginUser(req, res) {
     })
 }
 
-/**
- * getMe
- * /api/auth/get-Me
- */
 async function getMe(req, res) {
     const user = await userModel.findById(req.user.id)
 
@@ -101,32 +107,31 @@ async function getMe(req, res) {
         message: "User fetched successfully",
         user
     })
-                 
 }
 
-/**
- * /api/auth/logout
- */
 async function logoutUser(req, res) {
+
     const token = req.cookies.token
 
-    res.clearCookie("token")      
+    res.clearCookie("token")
 
-    await blacklistModel.create({
-        token
+    await redis.set(token, Date.now().toString(), "EX", 60 * 60)
+
+    res.status(200).json({
+        message: "logout successfully."
     })
 
-    res.status(201).json({
-        message: "Logout SuccessFully"
-    })
 }
 
 
+/**
+ * key value
+ * js object
+ * {
+ *  username:'test',
+ *  email:'test@test.com'
+ * }
+ */
 
 
-module.exports = {
-    registerUser,
-    loginUser,
-    getMe,
-    logoutUser
-}
+module.exports = { registerUser, loginUser, getMe, logoutUser }

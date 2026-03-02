@@ -1,3 +1,5 @@
+// This code is used to connect it to the server Redis
+
 const Redis = require("ioredis").default;
 
 const redis = new Redis({
