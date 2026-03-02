@@ -110,7 +110,7 @@ async function getMe(req, res) {
 async function logoutUser(req, res) {
     const token = req.cookies.token
 
-    res.clearCookies("token")
+    res.clearCookie("token")      
 
     await blacklistModel.create({
         token
