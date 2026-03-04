@@ -1,13 +1,15 @@
-button{
-    background-color: rgb(224, 39, 14);
+.button {
+    padding: 0.7rem;
+    border-radius: 8px;
     border: none;
-    color: rgb(255, 255, 255);
-    text-align: center;
-    text-decoration: none;
-    font-size: 1rem;
-    padding: 0.5rem;
-    outline: none;
-    margin-top: 1rem;
-    border-radius: 0.2rem;
     cursor: pointer;
+    background: white;
+    color: #333;
+    font-weight: 600;
+    transition: 0.3s ease;
+
+    &:hover {
+        background: #f1f1f1;
+        transform: translateY(-2px);
+    }
 }
