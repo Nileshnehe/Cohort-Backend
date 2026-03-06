@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { detect, init } from "../utills/utils";
 
 
-export default function FaceExpression() {
+export default function FaceExpression({ onClick = () => { } }) {
     const videoRef = useRef(null);
     const landmarkerRef = useRef(null);
     const streamRef = useRef(null);
@@ -25,6 +25,11 @@ export default function FaceExpression() {
         };
     }, []);
 
+    async function hadleClick() {
+        const expression = detect({ landmarkerRef, videoRef, setExpression })
+        onClick(expression)
+    }
+
     return (
         <div style={{
             display: "flex",
@@ -40,7 +45,7 @@ export default function FaceExpression() {
                 playsInline
             />
             <h2>{expression}</h2>
-            <button onClick={() => { detect({ landmarkerRef, videoRef, setExpression }) }} >Detect expression</button>
+            <button onClick={hadleClick} >Detect expression</button>
         </div>
     );
 }
