@@ -1,0 +1,59 @@
+.container {
+    position: relative;
+    width: 850px;
+    height: 550px;
+    background: #fff;
+    border-radius: 30px;
+    box-shadow: 0 0 30px rgba(0 0 .2);
+
+    .form-box {
+        position: absolute;
+        background: seagreen;
+        width: 50%;
+        height: 100%;
+        right: 0;
+        display: flex;
+        align-items: center;
+        color: #333;
+        text-align: center;
+
+        form {
+            width: 100%;
+
+            h1 {
+                font-size: 36px;
+                margin: -10px 0;
+            }
+
+            .input-box {
+                position: relative;
+                margin: 30px 0;
+
+                input {
+                    width: 100%;
+                    padding: 13px;
+                    border-radius: 8px;
+                    background: #eee;
+                    border: none;
+                    outline: none;
+                    color: #333;
+                    font-size: 16px;
+                    font-weight: 500;
+
+                    &::placeholder {
+                        color: #888;
+                        font-weight: 400;   
+                    }
+                }
+                .icon {
+                         position: absolute;
+                         right: 20px;
+                         top: 50%;
+                         transform: translateY(-50%);
+                         font-size: 16px;
+                         color: #888;
+                        }
+            }
+        }
+    }
+}

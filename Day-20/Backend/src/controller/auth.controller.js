@@ -61,10 +61,10 @@ async function registerController (req, res) {
 
        const user = await userModel.findOne({
               $or: [
-                     // condition
+                     
                      { username: username },
 
-                     // condition
+                     
                      { email: email }
               ]
        }).select("+password")
