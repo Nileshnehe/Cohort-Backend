@@ -111,6 +111,27 @@ export async function login(req, res) {
     })
 }
 
+export async function getMe(req, res){
+    const userId = req.user.id;
+
+    const user = await userModel.findById(userId).select("-password");
+
+    if(!user){
+        return res.status(404).json({
+            message: "user not found",
+            success: false,
+            err: "User not found",
+        })
+    }
+
+    res.status(200).json({
+        message: "User fetched sucessfully",
+        success: true,
+        user
+    })
+    
+}
+
 /**
  * @desc Verify user's email address
  * @route GET /api/auth/verify-email
