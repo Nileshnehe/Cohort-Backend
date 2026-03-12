@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema(
 // Yeh ek **middleware** hai jo **automatically** chalta hai jab bhi user save hota hai DB mein.
 
 userSchema.pre('save', async function () {
-    if (!this.isModified('password')) return next();
+    if (!this.isModified('password')) return;
     this.password = await bcrypt.hash(this.password, 10);
 });
 
