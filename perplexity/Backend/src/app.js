@@ -1,8 +1,11 @@
 import express from 'express'
 import cookieParser from 'cookie-parser';
 import authRouter from './routes/auth.route.js';
+import { testAi } from './services/ai.service.js';
 
+testAi()
 const app = express();
+
 
 // Middleware
 app.use(express.json());

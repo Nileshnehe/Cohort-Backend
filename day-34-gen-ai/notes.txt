@@ -1,0 +1,1 @@
+npm i readline-sync(terminal se input lenen ke liye)
