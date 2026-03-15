@@ -13,6 +13,7 @@ const Protected = ({children}) => {
         return <Navigate to="/login" replace />
     }
   return children
+  
 }
 
 export default Protected
