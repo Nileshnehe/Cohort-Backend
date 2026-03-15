@@ -3,11 +3,21 @@ import { useSelector } from "react-redux"
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { setUser } from '../../auth/auth.slice'
+import { useChat } from '../hooks/useChat'
+import { useEffect } from 'react'
 
 const Dashboard = () => {
+  
+  const chat = useChat()
 
   const { user } = useSelector(state => state.auth)
+
   console.log(user);
+  
+  useEffect(() => {
+    chat.initializeSocketConnection()
+  }, [])
+  
 
   const dispatch = useDispatch()
   const navigate = useNavigate()
