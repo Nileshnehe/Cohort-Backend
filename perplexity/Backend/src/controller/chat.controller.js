@@ -28,7 +28,7 @@ export async function sendMessage(req, res) {
 
     })
 
-    res.status(200).json({
+    res.status(201).json({
         title,
         chat,
         aiMessage
