@@ -1,0 +1,63 @@
+.sidebar {
+    height: 100vh;
+    width: 350px;
+    background-color: #171717;
+    color: #b4b4b4;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+button {
+    height: 50px;
+    padding: 10px;
+    margin: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+button h1,
+button span {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+button h1:hover,
+button span:hover {
+    background-color: rgba(180, 180, 180, 0.07);
+}
+
+.history {
+    margin: 10px;
+    padding: 10px;
+    height: 100%;
+}
+
+.history li {
+    list-style-type: none;
+
+    padding: 6px 10px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    position: relative;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.history li:hover {
+    background-color: rgba(180, 180, 180, 0.07);
+    transform: scale(1.02);
+}
+
+.sign {
+    padding: 10px;
+    margin: 10px;
+    font-size: 14px;
+    text-align: center;
+    border-top: solid 0.25px rgba(250, 250, 250, 0.07);
+}
