@@ -44,7 +44,11 @@
     align-items: center;
     margin-bottom: 10px;
 }
-
+form{
+display: flex;
+align-items: center;
+justify-content: center;
+}
 .inputBox{
     width: 100%;
     position: relative;
