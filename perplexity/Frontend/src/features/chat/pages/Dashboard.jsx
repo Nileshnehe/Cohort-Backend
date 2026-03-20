@@ -24,6 +24,13 @@ const Dashboard = () => {
     chat.handleGetChats()
   }, [])
 
+  useEffect(() => {
+  const chatList = Object.values(chats)
+  if (chatList.length > 0 && !currentChatId) {
+    chat.handleOpenChat(chatList[0].id)  // ← pehli chat auto-select
+  }
+}, [chats])
+
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -211,7 +218,7 @@ const Dashboard = () => {
         <section className='flex flex-col flex-1 h-full relative overflow-hidden'>
 
           {/* Messages */}
-          <div className='flex-1 overflow-y-auto px-6 py-4 pb-28 flex flex-col gap-3'>
+          <div className='messages flex-1 overflow-y-auto px-6 py-4 pb-28 flex flex-col gap-3'>
             {chats[currentChatId]?.messages.map((message) => (
               <div
                 key={message.id}
