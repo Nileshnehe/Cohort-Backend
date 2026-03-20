@@ -40,7 +40,7 @@ export async function register(req, res) {
                 <p>Thank you for registering at <strong>Perplexity</strong>. We're excited to have you on board!</p>
                 <p>Please verify your email address clicking the link below:</P>
                 <a href="http://localhost:3000/api/auth/verify-email?token=${emailVerificationToken}">Verify Email</a>        
-                <p>if you did not crate account, please ignore this emial</p>
+                <p>if you did not crate account, please ignore this email</p>
                 <p>Best regards,<br>The Perplexity Team</p>
         `
     })
@@ -125,7 +125,7 @@ export async function getMe(req, res){
     }
 
     res.status(200).json({
-        message: "User fetched sucessfully",
+        message: "User fetched successfully",
         success: true,
         user
     })

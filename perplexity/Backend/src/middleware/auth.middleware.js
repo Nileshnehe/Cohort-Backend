@@ -5,7 +5,7 @@ export function authUser(req, res, next){
 
     if(!token){
         return res.status(401).json({
-            message: "Unautherized",
+            message: "unauthorized",
             success: false,
             err: 'no token provided'
         })
@@ -18,7 +18,7 @@ export function authUser(req, res, next){
 
     }catch(err){
         return res.status(401).json({
-            message: "Unautherized",
+            message: "unauthorized",
             success: false,
             err: "Invalid token"
         })

@@ -7,10 +7,14 @@ const Dashboard = () => {
 
   const chat = useChat()
   const [chatInput, setChatInput] = useState('')
+  const [images, setImages] = useState([])
+  const [isDragging, setIsDragging] = useState(false)
   const [openMenuId, setOpenMenuId] = useState(null)
   const [renamingId, setRenamingId] = useState(null)
   const [renameValue, setRenameValue] = useState('')
   const menuRef = useRef(null)
+  const fileInputRef = useRef(null)
+  const textareaRef = useRef(null)
 
   const currentChatId = useSelector((state) => state.chat.currentChatId)
   const chats = useSelector((state) => state.chat.chats)
@@ -31,12 +35,56 @@ const Dashboard = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  // ── Image helpers ──────────────────────────────────────────────
+  const handleImageAdd = (files) => {
+    const imageFiles = Array.from(files).filter(f => f.type.startsWith('image/'))
+    const newImages = imageFiles.map(file => ({
+      file,
+      name: file.name,
+      preview: URL.createObjectURL(file),
+    }))
+    setImages(prev => [...prev, ...newImages])
+  }
+
+  const handleRemoveImage = (index) => {
+    setImages(prev => {
+      URL.revokeObjectURL(prev[index].preview)
+      return prev.filter((_, i) => i !== index)
+    })
+  }
+
+  // ── Textarea auto-resize ───────────────────────────────────────
+  const handleTextareaChange = (e) => {
+    setChatInput(e.target.value)
+    e.target.style.height = 'auto'
+    e.target.style.height = Math.min(e.target.scrollHeight, 160) + 'px'
+  }
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSubmitMessage(e)
+    }
+  }
+
+  // ── Drag & drop ────────────────────────────────────────────────
+  const handleDragOver = (e) => { e.preventDefault(); setIsDragging(true) }
+  const handleDragLeave = () => setIsDragging(false)
+  const handleDrop = (e) => {
+    e.preventDefault()
+    setIsDragging(false)
+    handleImageAdd(e.dataTransfer.files)
+  }
+
+  // ── Submit ─────────────────────────────────────────────────────
   const handleSubmitMessage = (event) => {
     event.preventDefault()
     const trimmedMessage = chatInput.trim()
-    if (!trimmedMessage) return
-    chat.handleSendMessage({ message: trimmedMessage, chatId: currentChatId })
+    if (!trimmedMessage && !images.length) return
+    chat.handleSendMessage({ message: trimmedMessage, chatId: currentChatId, images })
     setChatInput('')
+    setImages([])
+    if (textareaRef.current) textareaRef.current.style.height = 'auto'
   }
 
   const openChat = (chatId) => {
@@ -52,7 +100,7 @@ const Dashboard = () => {
 
   const handleRenameSubmit = (chatId) => {
     if (renameValue.trim()) {
-      chat.handleRenameChat({ chatId, title: renameValue.trim() }) // wire this up in useChat
+      chat.handleRenameChat({ chatId, title: renameValue.trim() })
     }
     setRenamingId(null)
   }
@@ -60,11 +108,18 @@ const Dashboard = () => {
   const handleDelete = (e, chatId) => {
     e.stopPropagation()
     setOpenMenuId(null)
-    chat.handleDeleteChat(chatId) // wire this up in useChat
+    chat.handleDeleteChat(chatId)
   }
 
   return (
     <main className='bg-[#111113] h-screen w-full text-[#ececec] overflow-hidden'>
+      <style>{`
+        textarea::-webkit-scrollbar { width: 4px; }
+        textarea::-webkit-scrollbar-track { background: transparent; }
+        textarea::-webkit-scrollbar-thumb { background: #3f3f3f; border-radius: 999px; }
+        textarea::-webkit-scrollbar-thumb:hover { background: #555; }
+      `}</style>
+
       <section className='flex h-full w-full'>
 
         {/* Sidebar */}
@@ -78,7 +133,6 @@ const Dashboard = () => {
                   currentChatId === chatItem.id ? 'bg-[#2f2f2f]' : ''
                 }`}
               >
-                {/* Rename input mode */}
                 {renamingId === chatItem.id ? (
                   <input
                     autoFocus
@@ -94,7 +148,6 @@ const Dashboard = () => {
                   />
                 ) : (
                   <>
-                    {/* Chat title button */}
                     <button
                       onClick={() => openChat(chatItem.id)}
                       type='button'
@@ -103,21 +156,19 @@ const Dashboard = () => {
                       {chatItem.title}
                     </button>
 
-                    {/* Three-dot menu button */}
                     <button
                       type='button'
                       onClick={(e) => {
                         e.stopPropagation()
                         setOpenMenuId(openMenuId === chatItem.id ? null : chatItem.id)
                       }}
-                      className='opacity-0 group-hover:opacity-100 mr-1 p-1.5 rounded-md hover:bg-[#4f4f4f] text-[#999] hover:text-[#ececec] transition-all flex-shrink-0'
+                      className='opacity-0 group-hover:opacity-100 mr-1 p-1.5 rounded-md hover:bg-[#4f4f4f] text-[#999] hover:text-[#ececec] transition-all flex shrink-0'
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                         <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
                       </svg>
                     </button>
 
-                    {/* Dropdown menu */}
                     {openMenuId === chatItem.id && (
                       <div
                         ref={menuRef}
@@ -190,23 +241,90 @@ const Dashboard = () => {
           </div>
 
           {/* Footer input */}
-          <footer className='absolute bottom-4 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl bg-[#1b1b1d] rounded-2xl px-4 py-3 border border-[#3f3f3f]'>
-            <form onSubmit={handleSubmitMessage} className='flex items-center gap-3'>
-              <input
-                type='text'
-                value={chatInput}
-                onChange={(event) => setChatInput(event.target.value)}
-                placeholder='Type your message...'
-                className='flex-1 bg-transparent outline-none text-sm text-[#ececec] placeholder:text-[#666]'
-              />
+          <footer
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={`absolute bottom-4 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl bg-[#1b1b1d] rounded-2xl px-4 py-3 border transition-colors relative ${
+              isDragging ? 'border-[#666]' : 'border-[#3f3f3f]'
+            }`}
+          >
+            {/* Image previews */}
+            {images.length > 0 && (
+              <div className='flex gap-2 pb-3 flex-wrap'>
+                {images.map((img, i) => (
+                  <div key={i} className='relative group w-16 h-16 rounded-xl overflow-hidden border border-[#3f3f3f] flex-shrink-0'>
+                    <img src={img.preview} alt={img.name} className='w-full h-full object-cover' />
+                    <button
+                      type='button'
+                      onClick={() => handleRemoveImage(i)}
+                      className='absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xl font-bold'
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Input row */}
+            <div className='flex items-end gap-3'>
+              {/* Upload button */}
               <button
-                type='submit'
-                disabled={!chatInput.trim()}
-                className='px-4 py-1.5 bg-[#111113] text-[#ececec] text-sm font-medium rounded-xl disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#161618] transition-colors'
+                type='button'
+                onClick={() => fileInputRef.current?.click()}
+                title='Upload image'
+                className='flex-shrink-0 mb-0.5 p-1.5 rounded-lg text-[#666] hover:text-[#ececec] hover:bg-[#2a2a2c] transition-colors'
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                </svg>
+              </button>
+
+              <input
+                ref={fileInputRef}
+                type='file'
+                accept='image/*'
+                multiple
+                className='hidden'
+                onChange={(e) => handleImageAdd(e.target.files)}
+              />
+
+              {/* Textarea */}
+              <textarea
+                ref={textareaRef}
+                value={chatInput}
+                onChange={handleTextareaChange}
+                onKeyDown={handleKeyDown}
+                placeholder='Type your message... (Shift+Enter for new line)'
+                rows={1}
+                className='flex-1 bg-transparent outline-none text-sm text-[#ececec] placeholder:text-[#666] resize-none leading-5 py-1'
+                style={{
+                  minHeight: '28px',
+                  maxHeight: '160px',
+                  overflowY: 'auto',
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: '#3f3f3f transparent',
+                }}
+              />
+
+              {/* Send button */}
+              <button
+                type='button'
+                onClick={handleSubmitMessage}
+                disabled={!chatInput.trim() && !images.length}
+                className='flex-shrink-0 px-4 py-1.5 bg-[#111113] text-[#ececec] text-sm font-medium rounded-xl disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#161618] transition-colors'
               >
                 Send
               </button>
-            </form>
+            </div>
+
+            {/* Drag overlay */}
+            {isDragging && (
+              <div className='absolute inset-0 rounded-2xl border-2 border-dashed border-[#555] bg-[#1b1b1d]/80 flex items-center justify-center pointer-events-none z-10'>
+                <span className='text-[#888] text-sm'>Drop image here</span>
+              </div>
+            )}
           </footer>
 
         </section>
