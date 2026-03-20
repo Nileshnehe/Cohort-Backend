@@ -1,7 +1,7 @@
 import { initializeSocketConnection } from "../service/chat.socket";
-import { sendMessage, getChats, getMessages, deleteChat } from "../service/chat.api";
+import { sendMessage, getChats, getMessages, deleteChat, renameChat } from "../service/chat.api";
 // import { setChats, setCurrentChatId, setError, setLoading, createNewChat, addNewMessage, addMessages,  } from "../chat.slice";
-import { setChats, setCurrentChatId, setError, setLoading, createNewChat, addNewMessage, addMessages, removeChatFromStore } from "../chat.slice";
+import { setChats, setCurrentChatId, setError, setLoading, createNewChat, addNewMessage, addMessages, removeChatFromStore, renameExistingChat } from "../chat.slice";
 import { useDispatch } from "react-redux";
 
 
@@ -90,11 +90,21 @@ export const useChat = () => {
     }
 }
 
-    async function handleRenameChat({ chatId, title }) {
+//     async function handleRenameChat({ chatId, title }) {
+//     try {
+//         await renameChat({ chatId, title }) // your API call
+//         dispatch(renameExistingChat({ chatId, title })) // slice action
+//     } catch (err) {
+//         dispatch(setError(err.message))
+//     }
+// }
+async function handleRenameChat({ chatId, title }) {
     try {
-        await renameChat({ chatId, title }) // your API call
-        dispatch(renameExistingChat({ chatId, title })) // slice action
+        await renameChat({ chatId, title })
+        console.log("Renaming:", chatId, title)  // ✅ add karo
+        dispatch(renameExistingChat({ chatId, title }))
     } catch (err) {
+        console.log("Rename error:", err)
         dispatch(setError(err.message))
     }
 }

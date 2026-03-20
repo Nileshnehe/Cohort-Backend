@@ -24,6 +24,7 @@ const chatSlice = createSlice({
             if (state.chats[chatId]) {
                 state.chats[chatId].title = title
             }
+
         },
         removeChatFromStore: (state, action) => {
             delete state.chats[action.payload]
@@ -52,5 +53,5 @@ const chatSlice = createSlice({
     }
 })
 
-export const { setChats, setCurrentChatId, setLoading, setError, createNewChat, addNewMessage, addMessages, removeChatFromStore } = chatSlice.actions
+export const { setChats, setCurrentChatId, setLoading, setError, createNewChat, addNewMessage, addMessages, removeChatFromStore, renameExistingChat } = chatSlice.actions
 export default chatSlice.reducer

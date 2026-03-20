@@ -33,7 +33,6 @@ export async function sendMessage(req, res) {
         role: "ai"
     })
 
-
     res.status(201).json({
         title,
         chat,
@@ -101,3 +100,23 @@ export async function deleteChat(req, res) {
     })
 }
 
+export async function renameChat(req, res) {
+    const { chatId } = req.params
+    const { title } = req.body
+
+    const chat = await chatModel.findOneAndUpdate(
+        { _id: chatId, user: req.user.id },
+        {title},
+        {new: true},
+    )
+
+    if (!chat){
+        return res.status(404).json({
+            message: "chat not found"
+        })
+    }
+
+    res.status(200).json({
+        message: "chat renamed successfully", chat
+    })
+}
