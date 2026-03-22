@@ -18,6 +18,9 @@ const Dashboard = () => {
 
   const currentChatId = useSelector((state) => state.chat.currentChatId)
   const chats = useSelector((state) => state.chat.chats)
+ 
+  // localStorage.setItem('username', username)
+  const [username, setUsername] = useState(localStorage.getItem('username') || '')
 
   useEffect(() => {
     chat.initializeSocketConnection()
@@ -25,11 +28,11 @@ const Dashboard = () => {
   }, [])
 
   useEffect(() => {
-  const chatList = Object.values(chats)
-  if (chatList.length > 0 && !currentChatId) {
-    chat.handleOpenChat(chatList[0].id)  // ← pehli chat auto-select
-  }
-}, [chats])
+    const chatList = Object.values(chats)
+    if (chatList.length > 0 && !currentChatId) {
+      chat.handleOpenChat(chatList[0].id)  // ← pehli chat auto-select
+    }
+  }, [chats])
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -136,9 +139,8 @@ const Dashboard = () => {
             {Object.values(chats).map((chatItem) => (
               <div
                 key={chatItem.id}
-                className={`group relative flex items-center rounded-lg hover:bg-[#2f2f2f] transition-colors ${
-                  currentChatId === chatItem.id ? 'bg-[#2f2f2f]' : ''
-                }`}
+                className={`group relative flex items-center rounded-lg hover:bg-[#2f2f2f] transition-colors ${currentChatId === chatItem.id ? 'bg-[#2f2f2f]' : ''
+                  }`}
               >
                 {renamingId === chatItem.id ? (
                   <input
@@ -172,7 +174,7 @@ const Dashboard = () => {
                       className='opacity-0 group-hover:opacity-100 mr-1 p-1.5 rounded-md hover:bg-[#4f4f4f] text-[#999] hover:text-[#ececec] transition-all flex shrink-0'
                     >
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                        <circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/>
+                        <circle cx="5" cy="12" r="2" /><circle cx="12" cy="12" r="2" /><circle cx="19" cy="12" r="2" />
                       </svg>
                     </button>
 
@@ -187,8 +189,8 @@ const Dashboard = () => {
                           className='w-full flex items-center gap-2 px-3 py-2 text-sm text-[#ececec] hover:bg-[#2f2f2f] transition-colors'
                         >
                           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                           </svg>
                           Rename
                         </button>
@@ -198,9 +200,9 @@ const Dashboard = () => {
                           className='w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-[#2f2f2f] transition-colors'
                         >
                           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
-                            <path d="M10 11v6"/><path d="M14 11v6"/>
-                            <path d="M9 6V4h6v2"/>
+                            <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14H6L5 6" />
+                            <path d="M10 11v6" /><path d="M14 11v6" />
+                            <path d="M9 6V4h6v2" />
                           </svg>
                           Delete
                         </button>
@@ -211,7 +213,24 @@ const Dashboard = () => {
               </div>
             ))}
           </div>
-          <div>hello</div>
+          {/* User Profile - Bottom */}
+{/* User Profile - Bottom */}
+<div className='flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-[#2f2f2f] transition-colors cursor-pointer'>
+  <div
+    className='w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 text-[#0f0f0f]'
+    style={{ background: 'linear-gradient(135deg, #6366f1, #4f52e0)' }}
+  >
+    {username
+      ? (() => {
+          const words = username.trim().split(/\s+/);
+          return words.length === 1
+            ? words[0][0].toUpperCase()
+            : (words[0][0] + words[words.length - 1][0]).toUpperCase();
+        })()
+      : '?'}
+  </div>
+  <span className='text-sm text-[#ececec] truncate'>{username || 'User'}</span>
+</div>
         </aside>
 
         {/* Main chat area */}
@@ -222,11 +241,10 @@ const Dashboard = () => {
             {chats[currentChatId]?.messages.map((message) => (
               <div
                 key={message.id}
-                className={`max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
-                  message.role === 'user'
+                className={`max-w-[75%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${message.role === 'user'
                     ? 'self-end bg-[#2f2f2f] text-[#ececec]'
                     : 'self-start bg-[#171717] text-[#ececec]'
-                }`}
+                  }`}
               >
                 {message.role === 'user' ? (
                   <p>{message.content}</p>
@@ -252,9 +270,8 @@ const Dashboard = () => {
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            className={`absolute bottom-4 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl bg-[#1b1b1d] rounded-2xl px-4 py-3 border transition-colors relative ${
-              isDragging ? 'border-[#666]' : 'border-[#3f3f3f]'
-            }`}
+            className={`absolute bottom-4 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl bg-[#1b1b1d] rounded-2xl px-4 py-3 border transition-colors relative ${isDragging ? 'border-[#666]' : 'border-[#3f3f3f]'
+              }`}
           >
             {/* Image previews */}
             {images.length > 0 && (
@@ -284,7 +301,7 @@ const Dashboard = () => {
                 className='flex-shrink-0 mb-0.5 p-1.5 rounded-lg text-[#666] hover:text-[#ececec] hover:bg-[#2a2a2c] transition-colors'
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                  <path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48" />
                 </svg>
               </button>
 

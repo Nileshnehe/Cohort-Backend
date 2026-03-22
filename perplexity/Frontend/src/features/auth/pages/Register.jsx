@@ -6,9 +6,10 @@ const Register = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
+
     const submitForm = (event) => {
         event.preventDefault()
-
+        localStorage.setItem('username', username)
         const payload = {
             username,
             email,
@@ -30,7 +31,7 @@ const Register = () => {
                         Register with your username, email, and password.
                     </p>
 
-                    <form className="mt-8 space-y-5">
+                    <form className="mt-8 space-y-5 onSubmit={submitForm}">
                         <div>
                             <label htmlFor="username" className="mb-2 block text-sm font-medium text-zinc-200">
                                 Username
