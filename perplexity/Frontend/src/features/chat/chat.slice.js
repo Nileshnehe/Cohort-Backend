@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import {v4 as uuid} from 'uuid'
+import { v4 as uuid } from 'uuid'
 
 const chatSlice = createSlice({
     name: 'chat',
@@ -30,9 +30,10 @@ const chatSlice = createSlice({
             delete state.chats[action.payload]
         },
         addNewMessage: (state, action) => {
-            const { chatId, content, role, id } = action.payload 
+            const { chatId, content, role, id } = action.payload
+            if (!state.chats[chatId]) return
             state.chats[chatId].messages.push({
-                id: id || uuid(),  
+                id: id || uuid(),
                 content,
                 role
             })
@@ -40,7 +41,10 @@ const chatSlice = createSlice({
         addMessages: (state, action) => {
             const { chatId, messages } = action.payload
             if (!state.chats[chatId]) return
-            state.chats[chatId].messages = messages
+            state.chats[chatId].messages = messages.map(msg => ({
+                ...msg,
+                id: msg.id || uuid()  // ← id ensure karo
+            }))
         },
         appendToMessage: (state, action) => {
             const { chatId, id, text } = action.payload

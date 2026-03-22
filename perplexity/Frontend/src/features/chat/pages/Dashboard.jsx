@@ -88,14 +88,14 @@ const Dashboard = () => {
 
   // ── Submit ─────────────────────────────────────────────────────
   const handleSubmitMessage = (event) => {
-    event.preventDefault()
-    const trimmedMessage = chatInput.trim()
-    if (!trimmedMessage && !images.length) return
-    chat.handleSendMessage({ message: trimmedMessage, chatId: currentChatId, images })
-    setChatInput('')
-    setImages([])
-    if (textareaRef.current) textareaRef.current.style.height = 'auto'
-  }
+  event.preventDefault()
+  const trimmedMessage = chatInput.trim()
+  if (!trimmedMessage && !images.length) return
+  chat.handleSendMessageStream({ message: trimmedMessage, chatId: currentChatId })
+  setChatInput('')
+  setImages([])
+  if (textareaRef.current) textareaRef.current.style.height = 'auto'
+}
 
   const openChat = (chatId) => {
     chat.handleOpenChat(chatId)

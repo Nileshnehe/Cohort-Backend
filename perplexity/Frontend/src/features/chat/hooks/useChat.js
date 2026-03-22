@@ -1,9 +1,9 @@
 import { initializeSocketConnection } from "../service/chat.socket";
 import { sendMessage, getChats, getMessages, deleteChat, renameChat } from "../service/chat.api";
-import { setChats, setCurrentChatId, setError, setLoading, createNewChat, addNewMessage, addMessages, removeChatFromStore, renameExistingChat, } from "../chat.slice";
+import { setChats, setCurrentChatId, setError, setLoading, createNewChat, addNewMessage, addMessages, removeChatFromStore, renameExistingChat, appendToMessage } from "../chat.slice";
 import { useDispatch, useSelector } from "react-redux";
 import { getSocket } from "../service/chat.socket"
-
+import {v4 as uuid} from "uuid"
 
 export const useChat = () => {
 
@@ -92,39 +92,51 @@ export const useChat = () => {
         }
     }
 
-    const handleSendMessageStream = ({ message, chatId }) => {
-        const socket = getSocket()
-        const assistantId = uuid()
 
-        // New chat ho toh pehle create karo
-        if (!chatId) {
-            const newChatId = uuid()
-            dispatch(createNewChat({ chatId: newChatId, title: message.slice(0, 30) }))
-            dispatch(setCurrentChatId(newChatId))
-            chatId = newChatId
-        }
 
-        // Conversation history
-        const conversationHistory = chats[chatId]?.messages || []
 
-        // User message
-        dispatch(addNewMessage({ chatId, content: message, role: "user", id: uuid() }))
 
-        // Empty assistant placeholder
-        dispatch(addNewMessage({ chatId, content: "", role: "ai", id: assistantId }))
+const handleSendMessageStream = ({ message, chatId }) => {
+    const socket = getSocket()
+    const assistantId = uuid()
 
-        // Socket emit with history
-        socket.emit("send_message", { message, chatId, messages: conversationHistory })
-
-        socket.on("stream_chunk", ({ text }) => {
-            dispatch(appendToMessage({ chatId, id: assistantId, text }))
-        })
-
-        socket.on("stream_end", () => {
-            socket.off("stream_chunk")
-            socket.off("stream_end")
-        })
+    if (!chatId) {
+        const newChatId = uuid()
+        dispatch(createNewChat({ chatId: newChatId, title: message.slice(0, 30) }))
+        dispatch(setCurrentChatId(newChatId))
+        chatId = newChatId
     }
+
+    socket.off("stream_chunk")
+    socket.off("stream_end")
+    socket.off("stream_error")
+
+    setTimeout(() => {
+        // ← empty messages filter karo
+        const conversationHistory = (chats[chatId]?.messages || []).filter(
+            msg => msg.content && msg.content.trim() !== ""
+        )
+        dispatch(addNewMessage({ chatId, content: message, role: "user", id: uuid() }))
+        dispatch(addNewMessage({ chatId, content: "", role: "ai", id: assistantId }))
+        socket.emit("send_message", { message, chatId, messages: conversationHistory })
+    }, 0)
+
+    socket.on("stream_chunk", ({ text }) => {
+        dispatch(appendToMessage({ chatId, id: assistantId, text }))
+    })
+
+    socket.on("stream_end", () => {
+        socket.off("stream_chunk")
+        socket.off("stream_end")
+    })
+
+    socket.on("stream_error", ({ message: errMsg }) => {
+        console.error("Stream error:", errMsg)
+        socket.off("stream_chunk")
+        socket.off("stream_end")
+        socket.off("stream_error")
+    })
+}
 
     return {
         initializeSocketConnection,
