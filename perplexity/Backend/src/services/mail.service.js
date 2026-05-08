@@ -7,7 +7,8 @@ const transporter = nodemailer.createTransport({
         user: process.env.GOOGLE_USER,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
-        clientId: process.env.GOOGLE_CLIENT_ID
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        accessToken: "MANUAL_ACCESS_TOKEN"
     }
 })
 
