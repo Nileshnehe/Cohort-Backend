@@ -1,0 +1,11 @@
+FROM node:20-alpine AS Frontend_builder
+
+WORKDIR /app
+
+COPY ./Frontend/package*.json /app
+
+RUN npm install
+
+COPY ./Frontend /app
+
+RUN npm run build

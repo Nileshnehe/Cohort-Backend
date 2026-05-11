@@ -4,23 +4,32 @@ import morgan from "morgan"
 const app = express();
 
 app.use(morgan("dev"))
+app.use(express.static("public"))
+
 
 app.get("/api/health", (req, res) => {
-    res.status(200).json({ status: 'ok' });
+    res.status(200).json({ status: "ok" });
 });
 
 app.get("/api/hello", (req, res) => {
     res.status(200).json({ message: "Hello World" })
 })
 
+
 app.get("/api/users", (req, res) => {
     const users = [
         { id: 1, name: 'hey' },
-        { id: 2, name: 'hello' }
+        { id: 2, name: 'hello' },
+        { id: 1, name: 'hey' },{ id: 1, name: 'hey' }
+
     ];
 
     res.status(200).json(users)
 
+})
+
+app.get("*name", (req, res) => {
+    res.sendFile("public/index.html", { root: __dirname });
 })
 
 app.listen(3000, () => {
