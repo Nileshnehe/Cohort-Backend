@@ -10,12 +10,14 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 
+
 app.get("/api/sandbox/health", (req, res) => {
     res.status(200).json({
         message: "Sandbox is healthy",
         status: "ok"
     })
 });
+
 
 app.post("/api/sandbox/start", async (req, res) => { 
 
