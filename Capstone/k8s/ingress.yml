@@ -4,15 +4,21 @@ metadata:
   name: codespace-ingress
   labels:
     app.kubernetes.io/name: codespace-ingress
+  annotations:
+    # 1. Regex parsing allow karne ke liye
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    # 2. Yeh target capture group ko handle karega (Matches exact paths)
+    nginx.ingress.kubernetes.io/rewrite-target: /api/sandbox/$2
 spec:
   ingressClassName: nginx
   rules:
     - http:
         paths:
-          - pathType: Prefix
-            path: "/api/sandbox"
+          # Regex use karke match karein taaki sub-paths forward ho sakein
+          - path: /api/sandbox(/|$)(.*)
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: sandbox-service
                 port:
-                  number: 80
+                  number: 80 # Service ka entry port 80 hai

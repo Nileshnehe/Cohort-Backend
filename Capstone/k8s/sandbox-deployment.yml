@@ -13,7 +13,8 @@ spec:
     metadata:       
       labels:
         app: sandbox
-    spec:           
+    spec:     
+      serviceAccountName: resource-manager      
       containers:
       - image: sandbox:latest
         imagePullPolicy: IfNotPresent
