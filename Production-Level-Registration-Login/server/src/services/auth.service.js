@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt"
-import User from "../models/user.model";
-import { generateAccessToken, generateRefreshToken } from "../utils/generateToken";
+import User from "../models/user.model.js";
+import { generateAccessToken, generateRefreshToken, saveRefreshToken } from "../utils/generateToken.js";
 
 
 const SALT_ROUNDS = 12;
@@ -31,8 +31,9 @@ export const registerUser = async ({ name, email, password }) => {
     const refreshToken = generateRefreshToken(user._id);
 
 
-    user.refreshToken = refreshToken;
-    await user.save();
+    
+    await saveRefreshToken(user._id, refreshToken)
+    
 
 
     return {
