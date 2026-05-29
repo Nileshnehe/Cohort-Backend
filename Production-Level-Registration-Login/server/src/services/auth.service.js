@@ -8,7 +8,6 @@ const SALT_ROUNDS = 12;
 
 export const registerUser = async ({ name, email, password }) => {
 
-
     const existingUser = await User.findOne({ email });
     if (existingUser) {
         const error = new Error("An account with this email already exists");
@@ -16,9 +15,7 @@ export const registerUser = async ({ name, email, password }) => {
         throw error;
     }
 
-
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-
 
     const user = await User.create({
         name,
@@ -26,15 +23,10 @@ export const registerUser = async ({ name, email, password }) => {
         password: hashedPassword
     });
 
-
     const accessToken = generateAccessToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
 
-
-    
     await saveRefreshToken(user._id, refreshToken)
-    
-
 
     return {
         user: user.toSafeObject(),
@@ -42,3 +34,34 @@ export const registerUser = async ({ name, email, password }) => {
         refreshToken
     };
 };
+
+export const loginUser = async ({ email, password }) => {
+
+    const user = await User.findOne({ email });
+    if (!user) {
+
+        const err = new Error("Invalid email or password");
+        err.statusCode = 401;
+        throw err;
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+
+        const err = new Error("Invalid email or password");
+        err.statusCode = 401;
+        throw err
+    }
+
+    const accessToken = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
+
+    await saveRefreshToken(user._id, refreshToken);
+
+    return {
+        user: user.toSafeObject(),
+        accessToken,
+        refreshToken
+    }
+}
