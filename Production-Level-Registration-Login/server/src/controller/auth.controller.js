@@ -1,4 +1,4 @@
-import { registerUser } from "../services/auth.service.js";
+import { loginUser, registerUser } from "../services/auth.service.js";
 
 
 const COOKIES_OPTION = {
@@ -21,6 +21,23 @@ export const registerController = async (req, res, next) => {
         })
 
     } catch (error) {
-        next(error.message)
+        next(error)
+    }
+}
+
+export const loginController = async (req, res, next) => {
+    try {
+
+        const {user, accessToken, refreshToken} = await loginUser(req.body);
+        res.cookie("refreshToken", refreshToken, COOKIES_OPTION);
+
+        return res.status(200).json({
+            success: true,
+            message: "Login successfully",
+            data: {userId: user._id, accessToken}
+        })
+
+    } catch (error) {
+        next(error)
     }
 }
