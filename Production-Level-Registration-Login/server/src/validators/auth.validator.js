@@ -22,7 +22,7 @@ export const loginSchema = Joi.object({
         .lowercase()
         .required(),
 
-        password: Joi.object()
+        password: Joi.string()
         .required()
 });
 
